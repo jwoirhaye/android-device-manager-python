@@ -1,7 +1,7 @@
 # Android Device Manager Python
 Android Device Manager is a Python library for creating, launching, and managing Android emulators (AVDs) programmatically.
 
-[![PyPI](https://img.shields.io/pypi/v/python-android-avd-manager?label=PyPI)](https://pypi.org/project/android-device-manager/)
+![PyPI - Version](https://img.shields.io/pypi/v/android-device-manager)
 [![CI](https://github.com/jwoirhaye/android-device-manager-python/actions/workflows/ci.yml/badge.svg)](https://github.com/jwoirhaye/android-device-manager-python/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/jwoirhaye/android-device-manager-python/branch/main/graph/badge.svg)](https://codecov.io/gh/jwoirhaye/android-device-manager-python)
 [![Docs](https://img.shields.io/badge/docs-mkdocs-blue?logo=readthedocs)](https://jwoirhaye.github.io/android-device-manager-python/)

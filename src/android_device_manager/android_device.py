@@ -1,5 +1,6 @@
 import logging
 from enum import Enum
+from pathlib import Path
 from typing import Optional
 
 from .adb.client import AdbClient
@@ -293,6 +294,62 @@ class AndroidDevice:
         if not self.is_package_installed(package_name):
             raise AndroidDeviceError(f"Package '{package_name}' is not installed.")
         self._adb_client.uninstall_package(package_name, keep_data=keep_data)
+
+    def push_file(self, local: str | Path, remote: str) -> None:
+        """
+        Push a file from the local machine to the device.
+
+        Args:
+            local (str or Path): Path to the local file to push.
+            remote (str): Destination path on the device.
+
+        Raises:
+            AndroidDeviceError: If the device is not running or the ADB client is not initialized.
+            ADBError: If the command fails.
+        """
+        self._ensure_running()
+        self._adb_client.push_file(local, remote)
+
+    def pull_file(self, remote: str, local: str | Path) -> None:
+        """
+        Pull a file from the device to the local machine.
+
+        Args:
+            remote (str): Path to the file on the device.
+            local (str or Path): Destination path on the local machine.
+
+        Raises:
+            AndroidDeviceError: If the device is not running or the ADB client is not initialized.
+            ADBError: If the command fails.
+        """
+        self._ensure_running()
+        self._adb_client.pull_file(remote, local)
+
+    def pull_data_partition(self, dest_path: str | Path = "./data.tar"):
+        """
+        Archive and pull the entire /data partition from the device.
+
+        The method switches to root mode, stops the Android runtime,
+        archives the /data directory to a tar, pulls it to the local machine,
+        removes the archive on the device, restarts Android, and returns to unrooted mode.
+
+        Args:
+            dest_path (str or Path): Local destination path for the pulled tarball (default: "./data.tar").
+
+        Raises:
+            AndroidDeviceError: If the device is not running or the ADB client is not initialized.
+            ADBError: If any command fails during the process.
+        """
+        self._ensure_running()
+        self._adb_client.root()
+        self._adb_client._run_adb_command(["shell", "stop"])
+        self._adb_client.shell(
+            ["tar", "cf", "/tmp/data.tar", "/data"], check=False, timeout=120
+        )
+        self._adb_client.pull_file("/tmp/data.tar", dest_path)
+        self._adb_client.shell(["rm", "-r", "/tmp/data.tar"])
+        self._adb_client._run_adb_command(["shell", "start"])
+        self._adb_client.unroot()
 
     def _ensure_running(self):
         """

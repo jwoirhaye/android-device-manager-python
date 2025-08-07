@@ -1,5 +1,6 @@
 import logging
 import subprocess
+from pathlib import Path
 from typing import Optional
 
 from ..adb.exceptions import ADBError, ADBTimeoutError
@@ -201,6 +202,46 @@ class AdbClient:
         output = result.stdout.strip().lower()
         if not ("success" in output):
             raise ADBError(f"Failed to uninstall package '{package_name}': {output}")
+
+    def push_file(
+            self, local: str | Path, remote: str, timeout: int = 60, check: bool = True
+    ) -> None:
+        """
+        Push a file from the local host to the device.
+
+        Args:
+            local (str | Path): Path to the local file.
+            remote (str): Destination path on the device (e.g., /sdcard/file.txt).
+            timeout (int): Timeout in seconds.
+            check (bool): Raise exception on failure.
+
+        Raises:
+            ADBError: If the command fails.
+            ADBTimeoutError: On timeout.
+        """
+        local_path = str(local)
+        args = ["push", local_path, remote]
+        self._run_adb_command(args, timeout=timeout, check=check)
+
+    def pull_file(
+            self, remote: str, local: str | Path, timeout: int = 60, check: bool = True
+    ) -> None:
+        """
+        Pull a file from the device to the local host.
+
+        Args:
+            remote (str): Path to the file on the device.
+            local (str | Path): Destination path on the host.
+            timeout (int): Timeout in seconds.
+            check (bool): Raise exception on failure.
+
+        Raises:
+            ADBError: If the command fails.
+            ADBTimeoutError: On timeout.
+        """
+        local_path = str(local)
+        args = ["pull", remote, local_path]
+        self._run_adb_command(args, timeout=timeout, check=check)
 
     def shell(
         self, cmd: list[str], timeout: int = 30, check: bool = True

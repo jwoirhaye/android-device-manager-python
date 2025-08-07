@@ -45,6 +45,7 @@ build_command = """
     uv build
 """
 
-[tool.semantic_release.branches.test]
-match = "feature/cd-pipeline"
+[tool.semantic_release.branches.main]
+match = "main"
+prerelease_token = "rc"
 prerelease = false

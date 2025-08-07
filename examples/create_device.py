@@ -8,8 +8,8 @@ logging.basicConfig(level=logging.INFO)
 
 
 avd_configuration = AVDConfiguration(
-        name="test_from_lib", package="system-images;android-36;google_apis;x86_64"
-    )
+    name="test_from_lib", package="system-images;android-36;google_apis;x86_64"
+)
 
 emulator_configuration = EmulatorConfiguration()
 
@@ -22,4 +22,3 @@ device.create()
 device.start()
 device.stop()
 device.delete()
-

@@ -1,9 +1,11 @@
 from ..exceptions import AndroidDeviceManagerError
 
+
 class ADBTimeoutError(AndroidDeviceManagerError):
     """
     Raised when a timeout occurs during an ADB operation.
     """
+
 
 class ADBError(AndroidDeviceManagerError):
     """

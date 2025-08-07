@@ -153,7 +153,7 @@ class AndroidDevice:
             raise
 
     def get_prop(
-            self, key: str | AndroidProp, timeout: int = 10, check: bool = True
+        self, key: str | AndroidProp, timeout: int = 10, check: bool = True
     ) -> str:
         """
         Retrieve a single Android system property from the device.
@@ -381,7 +381,7 @@ class AndroidDevice:
         self._adb_client.clear_logcat()
 
     def shell(
-            self, args: list[str], timeout: int = 30, check: bool = True
+        self, args: list[str], timeout: int = 30, check: bool = True
     ) -> subprocess.CompletedProcess:
         """
         Execute a shell command on the device/emulator via ADB, with safety checks for forbidden commands.

@@ -47,7 +47,6 @@ def test_is_system_image_installed_false(manager):
 
 
 def test_is_system_image_installed_section_skips(manager):
-
     output = make_sdkmanager_list_output(
         installed=[], available=["system-images;android-34;google_apis;x86_64"]
     )

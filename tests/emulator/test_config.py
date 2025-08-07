@@ -54,12 +54,10 @@ class TestEmulatorConfiguration:
         """Test EmulatorConfiguration with some custom values."""
         config = EmulatorConfiguration(no_window=True, memory=1024, netdelay="umts")
 
-        
         assert config.no_window is True
         assert config.memory == 1024
         assert config.netdelay == "umts"
 
-        
         assert config.no_audio is False
         assert config.gpu == "auto"
         assert config.cores is None
@@ -70,7 +68,6 @@ class TestEmulatorConfiguration:
         config = EmulatorConfiguration()
         args = config.to_args()
 
-        
         assert args == []
 
     def test_to_args_all_boolean_flags(self):
@@ -94,11 +91,9 @@ class TestEmulatorConfiguration:
             "-verbose",
         ]
 
-        
         for arg in expected_args:
             assert arg in args
 
-        
         assert len(args) == len(expected_args)
 
     def test_to_args_with_values(self):
@@ -116,7 +111,6 @@ class TestEmulatorConfiguration:
             ("-netspeed", "edge"),
         ]
 
-        
         arg_pairs = [(args[i], args[i + 1]) for i in range(0, len(args), 2)]
 
         assert len(arg_pairs) == len(expected_pairs)
@@ -135,7 +129,6 @@ class TestEmulatorConfiguration:
         )
         args = config.to_args()
 
-        
         assert "-no-window" in args
         assert "-wipe-data" in args
         assert "-verbose" in args
@@ -194,7 +187,6 @@ class TestEmulatorConfiguration:
         """Test that configuration can be modified after creation (dataclass is mutable)."""
         config = EmulatorConfiguration()
 
-        
         config.no_window = True
         config.memory = 1024
 
@@ -251,7 +243,7 @@ class TestEmulatorConfigurationValidation:
 
     def test_memory_negative_value(self):
         """Test configuration with negative memory value."""
-        
+
         config = EmulatorConfiguration(memory=-100)
         args = config.to_args()
 
@@ -279,7 +271,6 @@ class TestEmulatorConfigurationValidation:
         config = EmulatorConfiguration(gpu="", netdelay="", netspeed="")
         args = config.to_args()
 
-        
         assert "-gpu" in args
         assert "" in args
         assert "-netdelay" in args
@@ -348,7 +339,6 @@ def test_value_parameters_parametrized(
     assert expected_flag in args
     assert expected_value in args
 
-    
     flag_index = args.index(expected_flag)
     assert args[flag_index + 1] == expected_value
 
@@ -367,7 +357,6 @@ def test_default_values_not_in_args(field_name, default_value):
     config = EmulatorConfiguration(**kwargs)
     args = config.to_args()
 
-    
     assert args == []
 
 
@@ -439,12 +428,11 @@ class TestEmulatorConfigurationIntegration:
             wipe_data=True,
             no_snapshot=True,
             cold_boot=True,
-            netspeed="full",  
-            netdelay="none",  
+            netspeed="full",
+            netdelay="none",
         )
         args = config.to_args()
 
-        
         expected_flags = [
             "-no-window",
             "-no-audio",
@@ -467,7 +455,6 @@ class TestEmulatorConfigurationIntegration:
         )
         args = config.to_args()
 
-        
         assert "-gpu" in args and "host" in args
         assert "-memory" in args and "8192" in args
         assert "-cores" in args and "8" in args

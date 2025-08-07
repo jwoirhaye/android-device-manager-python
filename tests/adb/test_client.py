@@ -61,7 +61,7 @@ def test_wait_for_boot_success(fake_sdk):
     client = AdbClient(5554, fake_sdk)
     result = mock.Mock()
     result.stdout = "0"
-    
+
     with mock.patch.object(
         client,
         "_run_adb_command",
@@ -72,7 +72,7 @@ def test_wait_for_boot_success(fake_sdk):
 
 def test_wait_for_boot_timeout(fake_sdk):
     client = AdbClient(5554, fake_sdk)
-    
+
     with mock.patch.object(
         client, "_run_adb_command", return_value=mock.Mock(stdout="0")
     ):
@@ -83,7 +83,7 @@ def test_wait_for_boot_timeout(fake_sdk):
 def test_kill_emulator_success(fake_sdk):
     client = AdbClient(5554, fake_sdk)
     with mock.patch.object(client, "_run_adb_command", return_value=mock.Mock()):
-        client.kill_emulator()  
+        client.kill_emulator()
 
 
 def test_kill_emulator_adberror(fake_sdk):

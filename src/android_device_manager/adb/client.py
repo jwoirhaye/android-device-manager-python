@@ -141,9 +141,7 @@ class AdbClient:
         Returns:
             bool: True if running as root, False otherwise.
         """
-        result = self.shell(
-            ["id", "-u"], timeout=timeout, check=True
-        )
+        result = self.shell(["id", "-u"], timeout=timeout, check=True)
         return result.stdout.strip() == "0"
 
     def list_installed_packages(self) -> list[str]:
@@ -157,7 +155,7 @@ class AdbClient:
         result = self.shell(["pm", "list", "packages"], check=True)
         lines = result.stdout.strip().splitlines()
         return [
-            line[len("package:"):].strip()
+            line[len("package:") :].strip()
             for line in lines
             if line.startswith("package:")
         ]
@@ -181,7 +179,7 @@ class AdbClient:
             raise ADBError(f"Failed to install APK {apk_path}: {str(e)}")
 
     def uninstall_package(
-            self, package_name: str, keep_data: bool = False, timeout: int = 60
+        self, package_name: str, keep_data: bool = False, timeout: int = 60
     ) -> None:
         """
         Uninstall a package from the device.
@@ -200,11 +198,11 @@ class AdbClient:
         cmd.append(package_name)
         result = self._run_adb_command(cmd, timeout=timeout, check=True)
         output = result.stdout.strip().lower()
-        if not ("success" in output):
+        if "success" not in output:
             raise ADBError(f"Failed to uninstall package '{package_name}': {output}")
 
     def push_file(
-            self, local: str | Path, remote: str, timeout: int = 60, check: bool = True
+        self, local: str | Path, remote: str, timeout: int = 60, check: bool = True
     ) -> None:
         """
         Push a file from the local host to the device.
@@ -224,7 +222,7 @@ class AdbClient:
         self._run_adb_command(args, timeout=timeout, check=check)
 
     def pull_file(
-            self, remote: str, local: str | Path, timeout: int = 60, check: bool = True
+        self, remote: str, local: str | Path, timeout: int = 60, check: bool = True
     ) -> None:
         """
         Pull a file from the device to the local host.
@@ -244,10 +242,10 @@ class AdbClient:
         self._run_adb_command(args, timeout=timeout, check=check)
 
     def get_logcat(
-            self,
-            filter_spec: Optional[list[str]] = None,
-            timeout: int = 30,
-            check: bool = True,
+        self,
+        filter_spec: Optional[list[str]] = None,
+        timeout: int = 30,
+        check: bool = True,
     ) -> str:
         """
         Retrieve logcat output from the device.

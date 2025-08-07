@@ -4,9 +4,6 @@ from unittest import mock
 import pytest
 
 from android_device_manager.exceptions import SDKManagerError
-from android_device_manager.utils.sdk_manager import SDKManager
-
-
 
 
 def make_sdkmanager_list_output(installed=None, available=None):

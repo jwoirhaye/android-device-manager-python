@@ -1,5 +1,3 @@
-from unittest import mock
-
 import pytest
 
 from android_device_manager.utils.android_sdk import AndroidSDK

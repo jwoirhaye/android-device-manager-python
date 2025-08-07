@@ -20,3 +20,13 @@ Issues = "https://github.com/jwoirhaye/android-device-manager-python/issues"
 [build-system]
 requires = ["uv_build>=0.8.5,<0.9.0"]
 build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+markers = [
+    "no_fake_sdk: disable the fixture fake_sdk for this test",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+]

@@ -33,4 +33,16 @@ dev = [
     "mkdocstrings[python]>=0.30.0",
     "pytest>=8.4.1",
     "pytest-cov>=6.2.1",
+    "python-semantic-release>=10.3.1",
 ]
+
+[tool.semantic_release]
+build_command = """
+    uv lock --upgrade-package "$PACKAGE_NAME"
+    git add uv.lock
+    uv build
+"""
+
+[tool.semantic_release.branches.test]
+match = "feature/cd-pipeline"
+prerelease = false

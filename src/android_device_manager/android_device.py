@@ -1,4 +1,5 @@
 import logging
+import subprocess
 from enum import Enum
 from pathlib import Path
 from typing import Optional
@@ -378,6 +379,34 @@ class AndroidDevice:
         """
         self._ensure_running()
         self._adb_client.clear_logcat()
+
+    def shell(
+            self, args: list[str], timeout: int = 30, check: bool = True
+    ) -> subprocess.CompletedProcess:
+        """
+        Execute a shell command on the device/emulator via ADB, with safety checks for forbidden commands.
+
+        Args:
+            args (List[str]): The shell command as a list of arguments (e.g., ["ls", "/sdcard"]).
+            timeout (int): Timeout in seconds for the command (default: 30).
+            check (bool): If True, raise an exception for non-zero exit code.
+
+        Returns:
+            subprocess.CompletedProcess: The result object containing stdout, stderr, and exit code.
+
+        Raises:
+            AndroidDeviceError: If the command is forbidden (e.g., stop, reboot, poweroff).
+            ADBError: If the shell command fails (when check is True).
+            ADBTimeoutError: On timeout.
+        """
+        forbidden = {"stop", "reboot", "poweroff"}
+        if args and args[0] in forbidden:
+            raise AndroidDeviceError(
+                f"The shell command '{args[0]}' is not allowed via shell(). "
+                "Such commands can cause the device state to become incoherent with the library state. "
+                "Direct use of stop/reboot/poweroff is not supported yet—please use explicit API methods."
+            )
+        return self._adb_client.shell(args, timeout=timeout, check=check)
 
     def _ensure_running(self):
         """

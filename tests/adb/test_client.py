@@ -6,6 +6,7 @@ import pytest
 from android_device_manager.adb.client import AdbClient
 from android_device_manager.adb.exceptions import ADBError, ADBTimeoutError
 
+
 def test_init_sets_serial_and_adb_path(fake_sdk):
     client = AdbClient(5554, fake_sdk)
     assert client._port == 5554

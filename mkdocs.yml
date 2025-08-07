@@ -1,0 +1,21 @@
+site_name: Android Device Manager
+site_author: Jérémy Woirhaye
+
+repo_name: jwoirhaye/android-device-manager-python
+repo_url: https://github.com/jwoirhaye/android-device-manager-python
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+
+nav:
+  - Home: index.md

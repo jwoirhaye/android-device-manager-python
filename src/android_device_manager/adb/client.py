@@ -1,0 +1,189 @@
+import logging
+import subprocess
+from typing import List, Optional, Union
+
+from ..adb.exceptions import ADBError, ADBTimeoutError
+from ..constants import AndroidProp
+from ..utils.android_sdk import AndroidSDK
+
+logger = logging.getLogger(__name__)
+
+
+class AdbClient:
+    """
+    A client for interacting with an Android emulator/device via the Android Debug Bridge (ADB).
+    """
+
+    def __init__(self, emulator_port: int, android_sdk: Optional[AndroidSDK]=None):
+
+        """
+        Initialize the AdbClient.
+
+        Args:
+            emulator_port (int): The TCP port number of the emulator (e.g., 5554).
+            android_sdk (AndroidSDK): The Android SDK abstraction providing the adb path.
+        """
+        self._port = emulator_port
+        self._serial = f"emulator-{self._port}"
+        self._android_sdk = android_sdk or AndroidSDK()
+        self._adb_path = self._android_sdk.adb_path
+
+    def get_prop(
+        self, key: str | AndroidProp, timeout: int = 10, check: bool = True
+    ) -> str:
+        """
+        Get a single Android system property via adb.
+
+        Args:
+            key (str or AndroidProp): The name of the property, or an AndroidProp Enum.
+            timeout (int): Timeout in seconds.
+            check (bool): Raise if the command fails.
+
+        Returns:
+            str: Value of the property, or '' if not found.
+
+        Raises:
+            ADBError: If the adb command fails.
+        """
+        if isinstance(key, AndroidProp):
+            key = key.value
+        result = self.shell(["getprop", key], timeout=timeout, check=check)
+        return result.stdout.strip()
+
+    def wait_for_boot(self, timeout: int = 120) -> bool:
+        """
+        Wait for the emulator to fully boot (until 'sys.boot_completed' is set).
+
+        Args:
+            timeout (int): Maximum time to wait in seconds (default: 120).
+
+        Returns:
+            bool: True if the device booted successfully before the timeout.
+
+        Raises:
+            TimeoutError: If the device did not boot in the specified time.
+        """
+        import time
+
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            result_boot_completed = self.get_prop(
+                AndroidProp.BOOT_COMPLETED, check=False
+            )
+            if result_boot_completed == "1":
+                return True
+        raise ADBTimeoutError(
+
+            f"Device {self._serial} did not boot within {timeout} seconds."
+        )
+
+    def kill_emulator(self):
+        """
+        Kill (terminate) the emulator instance via ADB.
+
+        Raises:
+            ADBError: If the emulator could not be killed.
+        """
+        logger.info(f"Killing emulator with serial: {self._serial}")
+        try:
+            self._run_adb_command(["emu", "kill"])
+            logger.info(f"Successfully killed emulator {self._serial}")
+        except ADBError as e:
+            raise ADBError(f"Failed to kill emulator {self._serial}: {str(e)}")
+
+    def shell(
+            self, cmd: list[str], timeout: int = 30, check: bool = True
+    ) -> subprocess.CompletedProcess:
+        """
+        Execute a shell command on the device/emulator via ADB.
+
+        Args:
+            cmd (List[str]): The shell command as a list of arguments. Example: ["ls", "/sdcard"]
+            timeout (int): Timeout for the command (default: 30).
+            check (bool): If True, raise an exception for non-zero exit code.
+
+        Returns:
+            subprocess.CompletedProcess: The result object (stdout, stderr, etc.).
+
+        Raises:
+            ADBError: If the command fails (and check=True).
+            ADBTimeoutError: On timeout.
+        """
+        args = ["shell"] + cmd
+        return self._run_adb_command(args, timeout=timeout, check=check)
+
+    def _run_adb_command(
+        self, args: list[str], timeout: int = 30, check: bool = True
+    ) -> subprocess.CompletedProcess:
+        """
+        Run an ADB command for the associated emulator/device with error handling.
+
+        Args:
+            args (List[str]): List of ADB command arguments (excluding adb and -s).
+            timeout (int): Timeout in seconds for the command (default: 30).
+            check (bool): If True, CalledProcessError is raised for non-zero return codes.
+
+        Returns:
+            subprocess.CompletedProcess: The result object from subprocess.run.
+
+        Raises:
+            ADBError: If the command fails (non-zero return code or unexpected error).
+            ADBTimeoutError: If the command times out.
+
+        """
+        cmd = [str(self._adb_path), "-s", self._serial] + args
+        logger.debug(f"Executing ADB command: {' '.join(cmd)}")
+
+        try:
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=timeout, check=check
+            )
+            logger.debug("ADB stdout: %s", result.stdout.strip())
+            logger.debug("ADB stderr: %s", result.stderr.strip())
+            return result
+        except subprocess.CalledProcessError as e:
+            logger.error(
+                "ADB (%s): command failed: %r (exit code %d)\nstdout: %s\nstderr: %s",
+                self._serial,
+                e.cmd,
+                e.returncode,
+                (e.stdout or "").strip(),
+                (e.stderr or "").strip(),
+            )
+            raise ADBError(
+                f"ADB command failed on {self._serial}: {e.cmd} (exit code {e.returncode})\n"
+                f"stderr: {(e.stderr or '').strip()}",
+                return_code=e.returncode,
+                cmd=e.cmd,
+                stdout=e.stdout,
+                stderr=e.stderr,
+                serial=self._serial,
+            ) from e
+
+        except subprocess.TimeoutExpired as e:
+            logger.error(
+                "ADB (%s): command timed out after %ds: %r\nPartial stdout: %s\nPartial stderr: %s",
+                self._serial,
+                timeout,
+                e.cmd,
+                e.stdout,
+                e.stderr,
+            )
+            raise ADBTimeoutError(
+
+                f"ADB command timed out after {timeout} seconds on {self._serial}: {e.cmd}"
+            ) from e
+
+        except Exception as e:
+            logger.exception(
+                "ADB (%s): Unexpected error while running ADB command", self._serial
+            )
+            raise ADBError(
+                f"Unexpected error on {self._serial}: {str(e)}",
+                cmd=cmd,
+                serial=self._serial,
+            ) from e
+
+    def __repr__(self):
+        return f"<AdbClient serial={self._serial}>"
+

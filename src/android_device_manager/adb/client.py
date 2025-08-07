@@ -1,6 +1,6 @@
 import logging
 import subprocess
-from typing import List, Optional
+from typing import Optional
 
 from ..adb.exceptions import ADBError, ADBTimeoutError
 from ..constants import AndroidProp
@@ -96,7 +96,7 @@ class AdbClient:
         Execute a shell command on the device/emulator via ADB.
 
         Args:
-            cmd (List[str]): The shell command as a list of arguments. Example: ["ls", "/sdcard"]
+            cmd (list[str]): The shell command as a list of arguments. Example: ["ls", "/sdcard"]
             timeout (int): Timeout for the command (default: 30).
             check (bool): If True, raise an exception for non-zero exit code.
 
@@ -117,7 +117,7 @@ class AdbClient:
         Run an ADB command for the associated emulator/device with error handling.
 
         Args:
-            args (List[str]): List of ADB command arguments (excluding adb and -s).
+            args (list[str]): List of ADB command arguments (excluding adb and -s).
             timeout (int): Timeout in seconds for the command (default: 30).
             check (bool): If True, CalledProcessError is raised for non-zero return codes.
 

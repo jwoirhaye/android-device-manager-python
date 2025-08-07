@@ -6,6 +6,7 @@ import pytest
 from android_device_manager.exceptions import AndroidSDKNotFound
 from android_device_manager.utils.android_sdk import AndroidSDK
 
+
 def test_sdk_manual_path(fake_sdk_path):
     """Test initialization with an explicit, complete SDK path."""
     sdk = AndroidSDK(fake_sdk_path)

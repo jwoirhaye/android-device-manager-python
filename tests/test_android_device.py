@@ -1,4 +1,5 @@
 from unittest import mock
+
 import pytest
 
 from android_device_manager.adb.exceptions import ADBError

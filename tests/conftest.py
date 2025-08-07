@@ -35,6 +35,7 @@ def fake_sdk_path(monkeypatch, tmp_path, request):
 
     yield sdk_root
 
+
 @pytest.fixture
 def fake_sdk(fake_sdk_path):
     return AndroidSDK(fake_sdk_path)
@@ -43,4 +44,3 @@ def fake_sdk(fake_sdk_path):
 @pytest.fixture
 def manager(fake_sdk):
     return SDKManager(fake_sdk)
-

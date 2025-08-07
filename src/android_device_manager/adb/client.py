@@ -112,6 +112,39 @@ class AdbClient:
         except ADBError as e:
             raise ADBError(f"Failed to kill emulator {self._serial}: {str(e)}")
 
+    def root(self, timeout: int = 10, check: bool = True) -> bool:
+        """
+        Restart adbd with root permissions, if possible.
+
+        Args:
+            timeout (int): Timeout for the command (default: 10s)
+            check (bool): Raise if the command fails.
+
+        Returns:
+            bool: True if adbd is now running as root, False otherwise.
+
+        Raises:
+            ADBError: On failure to restart adbd.
+        """
+        self._run_adb_command(["root"], timeout=timeout, check=check)
+        return self.is_root()
+
+    def unroot(self, timeout: int = 10, check: bool = True) -> bool:
+        self._run_adb_command(["unroot"], timeout=timeout, check=check)
+        return not self.is_root()
+
+    def is_root(self, timeout: int = 10) -> bool:
+        """
+        Check if adbd is running as root on the device.
+
+        Returns:
+            bool: True if running as root, False otherwise.
+        """
+        result = self._run_adb_command(
+            ["shell", "id", "-u"], timeout=timeout, check=True
+        )
+        return result.stdout.strip() == "0"
+
     def shell(
         self, cmd: list[str], timeout: int = 30, check: bool = True
     ) -> subprocess.CompletedProcess:

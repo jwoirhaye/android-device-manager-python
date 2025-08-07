@@ -1,6 +1,6 @@
 import logging
 import subprocess
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from ..adb.exceptions import ADBError, ADBTimeoutError
 from ..constants import AndroidProp
@@ -14,8 +14,7 @@ class AdbClient:
     A client for interacting with an Android emulator/device via the Android Debug Bridge (ADB).
     """
 
-    def __init__(self, emulator_port: int, android_sdk: Optional[AndroidSDK]=None):
-
+    def __init__(self, emulator_port: int, android_sdk: Optional[AndroidSDK] = None):
         """
         Initialize the AdbClient.
 
@@ -73,7 +72,6 @@ class AdbClient:
             if result_boot_completed == "1":
                 return True
         raise ADBTimeoutError(
-
             f"Device {self._serial} did not boot within {timeout} seconds."
         )
 
@@ -92,7 +90,7 @@ class AdbClient:
             raise ADBError(f"Failed to kill emulator {self._serial}: {str(e)}")
 
     def shell(
-            self, cmd: list[str], timeout: int = 30, check: bool = True
+        self, cmd: list[str], timeout: int = 30, check: bool = True
     ) -> subprocess.CompletedProcess:
         """
         Execute a shell command on the device/emulator via ADB.
@@ -170,7 +168,6 @@ class AdbClient:
                 e.stderr,
             )
             raise ADBTimeoutError(
-
                 f"ADB command timed out after {timeout} seconds on {self._serial}: {e.cmd}"
             ) from e
 
@@ -186,4 +183,3 @@ class AdbClient:
 
     def __repr__(self):
         return f"<AdbClient serial={self._serial}>"
-

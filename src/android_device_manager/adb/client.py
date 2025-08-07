@@ -27,6 +27,29 @@ class AdbClient:
         self._android_sdk = android_sdk or AndroidSDK()
         self._adb_path = self._android_sdk.adb_path
 
+    def get_all_props(self, timeout: int = 10) -> dict[str, str]:
+        """
+        Get all Android system properties as a dictionary.
+
+        Args:
+            timeout (int): Timeout in seconds.
+
+        Returns:
+            dict[str, str]: All system properties as {key: value}
+
+        Raises:
+            ADBError: On failure.
+        """
+        result = self.shell(["getprop"], timeout=timeout)
+        props = {}
+        for line in result.stdout.splitlines():
+            if line.startswith("[") and "]:" in line:
+                key, value = line.split("]: [", 1)
+                key = key[1:]
+                value = value.rstrip("]")
+                props[key] = value
+        return props
+
     def get_prop(
         self, key: str | AndroidProp, timeout: int = 10, check: bool = True
     ) -> str:

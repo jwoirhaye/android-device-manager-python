@@ -351,6 +351,34 @@ class AndroidDevice:
         self._adb_client._run_adb_command(["shell", "start"])
         self._adb_client.unroot()
 
+    def get_logcat(self, filter_spec: Optional[list[str]] = None) -> str:
+        """
+        Retrieve the current logcat output from the device.
+
+        Args:
+            filter_spec (Optional[List[str]]): Optional list of logcat filters (e.g. ['*:E', 'ActivityManager:I']).
+
+        Returns:
+            str: The logcat output as a string.
+
+        Raises:
+            AndroidDeviceError: If the device is not running or the ADB client is not initialized.
+            ADBError: If the command fails.
+        """
+        self._ensure_running()
+        return self._adb_client.get_logcat(filter_spec=filter_spec)
+
+    def clear_logcat(self) -> None:
+        """
+        Clear the device's logcat logs.
+
+        Raises:
+            AndroidDeviceError: If the device is not running or the ADB client is not initialized.
+            ADBError: If the command fails.
+        """
+        self._ensure_running()
+        self._adb_client.clear_logcat()
+
     def _ensure_running(self):
         """
         Ensure that the Android device is started and the ADB client is initialized.

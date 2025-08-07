@@ -6,11 +6,13 @@ class AndroidDeviceManagerError(Exception):
     allowing users to catch all library-specific errors with a single except block.
     """
 
+
 class AndroidDeviceError(AndroidDeviceManagerError):
     """
     This exception is raised when an error occurs while interacting with
     an AndroidDevice.
     """
+
 
 class AndroidSDKNotFound(AndroidDeviceManagerError):
     """

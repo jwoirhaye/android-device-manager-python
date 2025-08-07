@@ -7,9 +7,11 @@ from .adb.exceptions import ADBError
 from .avd.config import AVDConfiguration
 from .avd.exceptions import AVDCreationError, AVDDeletionError
 from .avd.manager import AVDManager
+from .constants import AndroidProp
 from .emulator.config import EmulatorConfiguration
 from .emulator.exceptions import EmulatorStartError
 from .emulator.manager import EmulatorManager
+from .exceptions import AndroidDeviceError
 from .utils.android_sdk import AndroidSDK
 
 logger = logging.getLogger(__name__)
@@ -147,6 +149,56 @@ class AndroidDevice:
             self.state = AndroidDeviceState.ERROR
             logger.error(f"Failed to stop emulator for '{self.name}': {e}")
             raise
+
+    def get_prop(
+            self, key: str | AndroidProp, timeout: int = 10, check: bool = True
+    ) -> str:
+        """
+        Retrieve a single Android system property from the device.
+
+        Args:
+            key (str or AndroidProp): The name of the property, or an AndroidProp Enum.
+            timeout (int): Timeout in seconds for the adb command (default: 10).
+            check (bool): Whether to raise an exception if the command fails (default: True).
+
+        Returns:
+            str: The value of the requested property, or an empty string if not found.
+
+        Raises:
+            AndroidDeviceError: If the device is not started or the ADB client is not initialized.
+            ADBError: If there is a failure in communicating with the device.
+        """
+        self._ensure_running()
+        return self._adb_client.get_prop(key, timeout=timeout, check=check)
+
+    def get_all_props(self, timeout: int = 10) -> dict[str, str]:
+        """
+        Retrieve all Android system properties from the device as a dictionary.
+
+        Args:
+            timeout (int): Timeout in seconds for the adb command (default: 10).
+
+        Returns:
+            dict[str, str]: A dictionary mapping property names to their values.
+
+        Raises:
+            AndroidDeviceError: If the device is not started or the ADB client is not initialized.
+            ADBError: If there is a failure in communicating with the device.
+        """
+        self._ensure_running()
+        return self._adb_client.get_all_props(timeout=timeout)
+
+    def _ensure_running(self):
+        """
+        Ensure that the Android device is started and the ADB client is initialized.
+
+        Raises:
+            AndroidDeviceError: If the device is not running or the ADB client is not available.
+        """
+        if self.state != AndroidDeviceState.RUNNING or not self._adb_client:
+            raise AndroidDeviceError(
+                "ADB client not initialized. Device must be started."
+            )
 
     def __enter__(self):
         """

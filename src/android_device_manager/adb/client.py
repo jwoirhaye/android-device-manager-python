@@ -243,6 +243,48 @@ class AdbClient:
         args = ["pull", remote, local_path]
         self._run_adb_command(args, timeout=timeout, check=check)
 
+    def get_logcat(
+            self,
+            filter_spec: Optional[list[str]] = None,
+            timeout: int = 30,
+            check: bool = True,
+    ) -> str:
+        """
+        Retrieve logcat output from the device.
+
+        Args:
+            filter_spec (Optional[List[str]]): List of filter spec strings, e.g., ['*:E', 'ActivityManager:I']
+            timeout (int): Timeout for the command.
+            check (bool): Raise on non-zero exit code.
+
+        Returns:
+            str: Logcat output (stdout).
+
+        Raises:
+            ADBError: If adb command fails.
+            ADBTimeoutError: On timeout.
+        """
+        args = ["logcat", "-d"]
+        if filter_spec:
+            args.extend(filter_spec)
+        result = self._run_adb_command(args, timeout=timeout, check=check)
+        return result.stdout
+
+    def clear_logcat(self, timeout: int = 10, check: bool = True) -> None:
+        """
+        Clear the device logcat buffer.
+
+        Args:
+            timeout (int): Timeout for the command (default: 10 seconds).
+            check (bool): If True, raise if the command fails.
+
+        Raises:
+            ADBError: If the command fails.
+            AVDTimeoutError: On timeout.
+        """
+        args = ["logcat", "-c"]
+        self._run_adb_command(args, timeout=timeout, check=check)
+
     def shell(
         self, cmd: list[str], timeout: int = 30, check: bool = True
     ) -> subprocess.CompletedProcess:

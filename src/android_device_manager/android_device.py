@@ -188,6 +188,48 @@ class AndroidDevice:
         self._ensure_running()
         return self._adb_client.get_all_props(timeout=timeout)
 
+    def root(self) -> bool:
+        """
+        Restart the ADB daemon with root privileges.
+
+        Returns:
+            bool: True if the device is now running in root mode, False otherwise.
+
+        Raises:
+            AndroidDeviceError: If the device is not started or the ADB client is not initialized.
+            ADBError: If the operation fails.
+        """
+        self._ensure_running()
+        return self._adb_client.root()
+
+    def unroot(self) -> bool:
+        """
+        Restart the ADB daemon without root privileges (back to user mode).
+
+        Returns:
+            bool: True if the device is now running in unrooted mode, False otherwise.
+
+        Raises:
+            AndroidDeviceError: If the device is not started or the ADB client is not initialized.
+            ADBError: If the operation fails.
+        """
+        self._ensure_running()
+        return self._adb_client.unroot()
+
+    def is_root(self) -> bool:
+        """
+        Check if the ADB daemon is currently running with root privileges.
+
+        Returns:
+            bool: True if the device is running in root mode, False otherwise.
+
+        Raises:
+            AndroidDeviceError: If the device is not started or the ADB client is not initialized.
+            ADBError: If the operation fails.
+        """
+        self._ensure_running()
+        return self._adb_client.is_root()
+
     def _ensure_running(self):
         """
         Ensure that the Android device is started and the ADB client is initialized.

@@ -1,5 +1,7 @@
 site_name: Android Device Manager
 site_author: Jérémy Woirhaye
+site_description: "A Python library for managing Android emulators and devices"
+site_url: https://jwoirhaye.com/android-device-manager-python
 
 repo_name: jwoirhaye/android-device-manager-python
 repo_url: https://github.com/jwoirhaye/android-device-manager-python
@@ -8,14 +10,58 @@ theme:
   name: material
   features:
     - navigation.tabs
+    - navigation.top
+    - content.code.copy
+  icon:
+    repo: fontawesome/brands/github
+
 
 plugins:
   - search
+  - social
   - mkdocstrings:
       handlers:
         python:
           options:
             docstring_style: google
+            show_source: false
+            show_root_heading: true
+            members_order: source
+            show_category_heading: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+
 
 nav:
   - Home: index.md
+  - Getting Started:
+      - Quickstart: getting-started/quickstart.md
+      - Installation: getting-started/installation.md
+  - API Reference:
+      - Overview: api/index.md
+      - AndroidDevice: api/android_device.md
+      - ADB: api/adb.md
+      - AVD: api/avd.md
+      - Emulator: api/emulator.md
+      - Constants: api/constants.md
+  - Examples:
+      - Basic usage: examples/basic-usage.md
+      - APK management: examples/apk-management.md
+      - Device info & properties: examples/device-info.md
+      - File operations: examples/file-operations.md
+      - Automation: examples/automation.md
+      - Advanced:
+          - Overview: examples/advanced/index.md
+          - Using AdbClient: examples/advanced/adbclient.md
+          - Using AVDManager: examples/advanced/avdmanager.md
+          - Using EmulatorManager: examples/advanced/emulatormanager.md
+  - Troubleshooting: troubleshooting.md

@@ -230,6 +230,70 @@ class AndroidDevice:
         self._ensure_running()
         return self._adb_client.is_root()
 
+    def list_installed_packages(self) -> list[str]:
+        """
+        List all installed package names on the device.
+
+        Returns:
+            list[str]: A list of installed package names.
+
+        Raises:
+            AndroidDeviceError: If the device is not running or the ADB client is not initialized.
+            ADBError: If the command fails.
+        """
+        self._ensure_running()
+        return self._adb_client.list_installed_packages()
+
+    def is_package_installed(self, package_name: str) -> bool:
+        """
+        Check if a given package is installed on the device.
+
+        Args:
+            package_name (str): The package name to check.
+
+        Returns:
+            bool: True if the package is installed, False otherwise.
+
+        Raises:
+            AndroidDeviceError: If the device is not running or the ADB client is not initialized.
+            ADBError: If the command fails.
+        """
+        self._ensure_running()
+        return package_name in self._adb_client.list_installed_packages()
+
+    def install_apk(self, apk_path: str, timeout: int = 30) -> None:
+        """
+        Install an APK on the device.
+
+        Args:
+            apk_path (str): The file path to the APK.
+            timeout (int): Timeout in seconds for the installation process (default: 30).
+
+        Raises:
+            AndroidDeviceError: If the device is not running or the ADB client is not initialized.
+            ADBError: If the command fails.
+        """
+        self._ensure_running()
+        self._adb_client.install_apk(apk_path, timeout=timeout)
+
+    def uninstall_package(self, package_name: str, keep_data: bool = False) -> None:
+        """
+        Uninstall a package from the device.
+
+        Args:
+            package_name (str): The name of the package to uninstall.
+            keep_data (bool): If True, application data and cache are retained (default: False).
+
+        Raises:
+            AndroidDeviceError: If the device is not running, the ADB client is not initialized,
+                or the package is not installed.
+            ADBError: If the command fails.
+        """
+        self._ensure_running()
+        if not self.is_package_installed(package_name):
+            raise AndroidDeviceError(f"Package '{package_name}' is not installed.")
+        self._adb_client.uninstall_package(package_name, keep_data=keep_data)
+
     def _ensure_running(self):
         """
         Ensure that the Android device is started and the ADB client is initialized.

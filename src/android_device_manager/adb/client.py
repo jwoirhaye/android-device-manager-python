@@ -140,10 +140,67 @@ class AdbClient:
         Returns:
             bool: True if running as root, False otherwise.
         """
-        result = self._run_adb_command(
-            ["shell", "id", "-u"], timeout=timeout, check=True
+        result = self.shell(
+            ["id", "-u"], timeout=timeout, check=True
         )
         return result.stdout.strip() == "0"
+
+    def list_installed_packages(self) -> list[str]:
+        """
+        List installed package names on the device.
+        Returns:
+            list[str]: Package names.
+        Raises:
+            ADBError: On failure.
+        """
+        result = self.shell(["pm", "list", "packages"], check=True)
+        lines = result.stdout.strip().splitlines()
+        return [
+            line[len("package:"):].strip()
+            for line in lines
+            if line.startswith("package:")
+        ]
+
+    def install_apk(self, apk_path: str, timeout: int = 60):
+        """
+        Install an APK file on the device.
+
+        Args:
+            apk_path (str): Path to the APK file on the host.
+            timeout (int): Timeout in seconds for the installation.
+
+        Raises:
+            ADBError: If the installation fails.
+        """
+        try:
+            args = ["install", apk_path]
+            self._run_adb_command(args, check=True, timeout=timeout)
+            logger.info(f"Successfully installed APK {apk_path} on {self._serial}")
+        except ADBError as e:
+            raise ADBError(f"Failed to install APK {apk_path}: {str(e)}")
+
+    def uninstall_package(
+            self, package_name: str, keep_data: bool = False, timeout: int = 60
+    ) -> None:
+        """
+        Uninstall a package from the device.
+
+        Args:
+            package_name (str): The full package name to uninstall.
+            keep_data (bool): If True, keep app data and cache (default: False).
+            timeout (int): Timeout in seconds.
+
+        Raises:
+            ADBError: If the uninstallation fails.
+        """
+        cmd = ["uninstall"]
+        if keep_data:
+            cmd.append("-k")
+        cmd.append(package_name)
+        result = self._run_adb_command(cmd, timeout=timeout, check=True)
+        output = result.stdout.strip().lower()
+        if not ("success" in output):
+            raise ADBError(f"Failed to uninstall package '{package_name}': {output}")
 
     def shell(
         self, cmd: list[str], timeout: int = 30, check: bool = True

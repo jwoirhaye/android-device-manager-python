@@ -148,5 +148,27 @@ class AndroidDevice:
             logger.error(f"Failed to stop emulator for '{self.name}': {e}")
             raise
 
+    def __enter__(self):
+        """
+        Context manager entry: ensure device is created and started.
+        """
+        if self.state == AndroidDeviceState.NOT_CREATED:
+            self.create()
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Context manager exit: stop the emulator and (optionally) delete the AVD.
+        """
+        try:
+            self.stop()
+        except Exception as e:
+            logger.warning(f"Error while stopping emulator: {e}")
+        try:
+            self.delete()
+        except Exception as e:
+            logger.warning(f"Error while deleting AVD: {e}")
+
     def __repr__(self):
         return f"<AndroidDevice name={self.name} state={self.state.value}>"

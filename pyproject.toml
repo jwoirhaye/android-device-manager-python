@@ -1,6 +1,6 @@
 [project]
 name = "android-device-manager"
-version = "0.0.0"
+version = "1.0.1"
 description = "Android Device Manager is a Python library for creating, launching, and managing Android device programmatically. "
 authors = [
     { name = "Jérémy Woirhaye", email = "jerem.woirhaye@gmail.com" }

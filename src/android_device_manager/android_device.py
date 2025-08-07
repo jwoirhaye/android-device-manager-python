@@ -395,7 +395,7 @@ class AndroidDevice:
             subprocess.CompletedProcess: The result object containing stdout, stderr, and exit code.
 
         Raises:
-            AndroidDeviceError: If the command is forbidden (e.g., stop, reboot, poweroff).
+            AndroidDeviceError: If the command is forbidden (e.g., stop, reboot, poweroff). If the device is not running or the ADB client is not initialized.
             ADBError: If the shell command fails (when check is True).
             ADBTimeoutError: On timeout.
         """
@@ -406,6 +406,7 @@ class AndroidDevice:
                 "Such commands can cause the device state to become incoherent with the library state. "
                 "Direct use of stop/reboot/poweroff is not supported yet—please use explicit API methods."
             )
+        self._ensure_running()
         return self._adb_client.shell(args, timeout=timeout, check=check)
 
     def _ensure_running(self):

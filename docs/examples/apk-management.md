@@ -18,7 +18,7 @@ emulator_config = EmulatorConfiguration(
     no_window=True
 )
 
-with AndroidDevice(avd_config) as device:
+with AndroidDevice(avd_config,emulator_config) as device:
     # Install APK
     device.install_apk("/path/to/app.apk")
 

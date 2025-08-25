@@ -72,16 +72,16 @@ emulator -version
 sdkmanager --list_installed
 ```
 
-## Install python-android-avd-manager
+## Install android-device-manager
 
 ### 📦 From PyPI (Recommended)
 ```bash
-pip install python-android-avd-manager
+pip install android-device-manager
 ```
 
 ### 🚧 From Source
 ```bash
-git clone https://github.com/jwoirhaye/python-android-avd-manager-python.git
-cd python-android-avd-manager
+git clone https://github.com/jwoirhaye/android-device-manager-python.git
+cd android-device-manager-python
 pip install -e .
 ```

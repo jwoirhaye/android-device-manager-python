@@ -2,6 +2,27 @@
 
 <!-- version list -->
 
+## v1.1.0 (2025-08-25)
+
+### Chores
+
+- Update pyproject.toml
+  ([`613371b`](https://github.com/jwoirhaye/android-device-manager-python/commit/613371bdae829965d0680adf3b1a056ef79254a8))
+
+- Update pyproject.toml
+  ([`d55ebd4`](https://github.com/jwoirhaye/android-device-manager-python/commit/d55ebd42c7d9ad9bbfa8a172eeb53491c1d459c6))
+
+### Documentation
+
+- Fix pip install name and example usage
+  ([`b512f24`](https://github.com/jwoirhaye/android-device-manager-python/commit/b512f24288d0427303e951cb7324e678ae54eff7))
+
+### Features
+
+- Add install_multi_package in android_device and adb client
+  ([`5491113`](https://github.com/jwoirhaye/android-device-manager-python/commit/54911133dc781ff194f9a2a6eb89a1e555a4849f))
+
+
 ## v1.0.2 (2025-08-07)
 
 ### Bug Fixes

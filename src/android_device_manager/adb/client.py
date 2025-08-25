@@ -178,6 +178,27 @@ class AdbClient:
         except ADBError as e:
             raise ADBError(f"Failed to install APK {apk_path}: {str(e)}")
 
+    def install_multi_package(self, apk_paths: list[str], timeout: int = 120):
+        """
+        Install multiple APKs in a single transaction using 'adb install-multi-package'.
+
+        Args:
+            apk_paths (list[str]): List of APK file paths on the host.
+            timeout (int): Timeout in seconds for the installation.
+
+        Raises:
+            ADBError: If the installation fails.
+        """
+        if not apk_paths:
+            raise ADBError("No APKs provided for installation.")
+
+        try:
+            args = ["install-multi-package", *apk_paths]
+            self._run_adb_command(args, check=True, timeout=timeout)
+            logger.info(f"Successfully installed APKs {apk_paths} on {self._serial}")
+        except ADBError as e:
+            raise ADBError(f"Failed to install APKs {apk_paths}: {str(e)}")
+
     def uninstall_package(
         self, package_name: str, keep_data: bool = False, timeout: int = 60
     ) -> None:

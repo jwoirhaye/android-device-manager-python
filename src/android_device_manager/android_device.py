@@ -278,6 +278,21 @@ class AndroidDevice:
         self._ensure_running()
         self._adb_client.install_apk(apk_path, timeout=timeout)
 
+    def install_multi_package(self, apk_paths: list[str], timeout: int = 60) -> None:
+        """
+        Install multiple APKs on the device in a single transaction.
+
+        Args:
+            apk_paths (list[str]): A list of file paths to the APKs.
+            timeout (int): Timeout in seconds for the installation process (default: 60).
+
+        Raises:
+            AndroidDeviceError: If the device is not running or the ADB client is not initialized.
+            ADBError: If the command fails.
+        """
+        self._ensure_running()
+        self._adb_client.install_multi_package(apk_paths, timeout=timeout)
+
     def uninstall_package(self, package_name: str, keep_data: bool = False) -> None:
         """
         Uninstall a package from the device.

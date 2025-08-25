@@ -54,7 +54,7 @@ Android Device Manager is a Python library for creating, launching, and managing
 
 ### 📦 From PyPI (Recommended)
 ```bash
-pip install python-android-avd-manager
+pip install android-device-manager
 ```
 
 ### 🚧 From Source
